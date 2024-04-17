@@ -1,0 +1,5 @@
+train: C:\\Users\\oshen geenath\\Desktop\\Numberplate\\ultralytics\\dataset\\images\\train
+val: C:\\Users\\oshen geenath\\Desktop\\Numberplate\\ultralytics\\dataset\\images\\val
+
+nc: 1
+names: ['plate']

@@ -1,15 +1,15 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# In[ ]:
-
-
 import pymongo
 from datetime import datetime
+from Num_plate_read import bbox_crop
+from ultralytics import YOLO
+
+
+image_folder = "./test_image.jpg"
+model = YOLO('YOLO.pt')
 
 def check_number_plate(collection):
     # Get input from the user
-    number_plate = input("Enter number plate: ")
+    number_plate = bbox_crop(image_folder=image_folder, model=model)
 
     # Query MongoDB for the given number plate
     query = {"Number Plate": number_plate}

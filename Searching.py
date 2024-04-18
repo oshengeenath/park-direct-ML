@@ -22,7 +22,8 @@ def check_number_plate(collection):
         # Extract data from the result
         plate = result["vehicleNumber"]
         slot = result["parkingSlotId"]
-        date = result["date"]
+        date_str = result["date"]
+        date = datetime.strptime(date_str, '%Y-%m-%d').date()  # Convert string to date
         arrival_time = result['arrivalTime']
         departure_time = result['leaveTime']
         booking_status = result['status']

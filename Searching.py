@@ -12,7 +12,7 @@ def check_number_plate(collection):
     number_plate = bbox_crop(image_folder=image_folder, model=model)
 
     # Query MongoDB for the given number plate
-    query = {"Number Plate": number_plate}
+    query = {"vehicleNumber": number_plate}
     result = collection.find_one(query)
 
     if result:

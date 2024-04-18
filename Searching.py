@@ -28,9 +28,9 @@ def check_number_plate(collection):
         departure_time = result['leaveTime']
         booking_status = result['status']
         
-        if date.date() == today_date:
-            print(f"Vehicle Number: {plate}, Parking Slot: {slot}, Arrival Time: {arrival_time}, Departure Time: {departure_time}, Booking Status: {booking_status}")
-        elif date.date() > today_date:
+        if date == today_date:
+            print(f"Vehicle Number: {plate}, \nParking Slot: {slot}, \nArrival Time: {arrival_time}, \nDeparture Time: {departure_time}, \nBooking Status: {booking_status}")
+        elif date > today_date:
             print("The date is in the future.")
         else:
             print("The date has expired.")

@@ -6,6 +6,8 @@ from datetime import datetime
 from Num_plate_read import bbox_crop
 from ultralytics import YOLO
 from integrated_code import main
+import tkinter as tk
+from tkinter import messagebox
 
 def convert_to_yolo_input():
     frame = main()
@@ -28,6 +30,44 @@ def convert_to_yolo_input():
 
 image_folder = convert_to_yolo_input()
 model = YOLO("YOLO.pt")
+
+def display_info(plate, slot, arrival_time, departure_time, booking_status):
+    # Create a new Tkinter window
+    root = tk.Tk()
+    root.title("Vehicle Information")
+    
+    # Set up the window's geometry
+    root.geometry("400x200")  # width x height
+    
+    # Define labels for displaying the vehicle information
+    tk.Label(root, text=f"Vehicle Number: {plate}").pack()
+    tk.Label(root, text=f"Parking Slot: {slot}").pack()
+    tk.Label(root, text=f"Arrival Time: {arrival_time}").pack()
+    tk.Label(root, text=f"Departure Time: {departure_time}").pack()
+    tk.Label(root, text=f"Booking Status: {booking_status}").pack()
+    
+    # Button to close the window
+    tk.Button(root, text="Close", command=root.destroy).pack()
+    
+    # Start the Tkinter event loop
+    root.mainloop()
+
+def display_message(message):
+    # Create a new Tkinter window
+    root = tk.Tk()
+    root.title("Message")
+
+    # Set up the window's geometry
+    root.geometry("300x100")  # width x height
+
+    # Define a label to display the message
+    tk.Label(root, text=message, padx=10, pady=10).pack()
+
+    # Button to close the window
+    tk.Button(root, text="Close", command=root.destroy).pack()
+
+    # Start the Tkinter event loop
+    root.mainloop()    
 
 def check_number_plate(collection):
     # Get input from the user
@@ -52,12 +92,16 @@ def check_number_plate(collection):
         
         if date == today_date:
             print(f"Vehicle Number: {plate}, \nParking Slot: {slot}, \nArrival Time: {arrival_time}, \nDeparture Time: {departure_time}, \nBooking Status: {booking_status}")
+            display_info(plate, slot, arrival_time, departure_time, booking_status)
         elif date > today_date:
             print("The date is in the future.")
+            display_message("The date is in the future.")
         else:
             print("The date has expired.")
+            display_message("The date has expired.")
     else:
         print("Vehicle Number does not exist.")
+        display_message("Vehicle Number does not exist.")
 
 # Connect to MongoDB
 client = pymongo.MongoClient("mongodb+srv://arul20210434:Ze3zWYFSym1wEuuE@edgeai.2feeugm.mongodb.net/?retryWrites=true&w=majority&appName=edgeAI")

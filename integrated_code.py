@@ -64,4 +64,3 @@ def main():
         arduino.close()
         print("Serial connection closed.")    
     return frame
-

@@ -1,11 +1,33 @@
+import cv2
 import pymongo
+import tempfile
+from PIL import Image
 from datetime import datetime
 from Num_plate_read import bbox_crop
 from ultralytics import YOLO
+from integrated_code import main
 
+def convert_to_yolo_input():
+    frame = main()
+    
+    # Resize the frame to match YOLO input size
+    resized_frame = cv2.resize(frame, (416, 416))  # Adjust the size according to your YOLO model's input size
+    
+    # Convert the image to RGB
+    rgb_frame = cv2.cvtColor(resized_frame, cv2.COLOR_BGR2RGB)
+    
+    # Convert NumPy array to PIL Image
+    pil_image = Image.fromarray(rgb_frame)
+    
+    # Save PIL Image to a temporary file
+    temp_file = tempfile.NamedTemporaryFile(delete=False, suffix='.jpg')
+    temp_file_path = temp_file.name
+    pil_image.save(temp_file_path)
+    
+    return temp_file_path
 
-image_folder = "./test_image.jpg"
-model = YOLO('YOLO.pt')
+image_folder = convert_to_yolo_input()
+model = YOLO("YOLO.pt")
 
 def check_number_plate(collection):
     # Get input from the user

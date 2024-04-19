@@ -3,6 +3,13 @@ import cv2
 import os
 import time
 import numpy as np
+from Num_plate_read import bbox_crop
+from ultralytics import YOLO
+from PIL import Image
+import matplotlib.pyplot as plt
+from Num_plate_read import bbox_crop
+
+plt.figure(figsize = (20, 20))
 
 # Establish a connection to the Arduino on COM6
 arduino = serial.Serial(port='COM6', baudrate=9600, timeout=1)
@@ -22,39 +29,43 @@ def find_camera_index():
 def capture_and_process_image(camera_index):
     cap = cv2.VideoCapture(camera_index, cv2.CAP_DSHOW)
     if not cap.isOpened():
-        print(f"Cannot open camera at index {camera_index}")
+        print("Cannot open camera at index", camera_index)
         return None, None
     ret, frame = cap.read()
     cap.release()
     if not ret:
         print("Can't receive frame (stream end?). Exiting ...")
         return None, None
-    
-    # Optionally encode to JPEG if needed for saving or transmission
+
+    # Encode frame to JPEG format
     _, jpeg = cv2.imencode('.jpg', frame)
-    
-    return frame, jpeg.tobytes()  # Return both the raw frame and the JPEG data
+    return frame, jpeg.tobytes() # Return both the raw frame and the JPEG data
 
-def use_image_for_ml(frame):
-    # Placeholder for machine learning model processing
-    # Assume `model_predict` is a function that takes a frame and returns some output
-    output = model_predict(frame)
-    return output
+model = YOLO('YOLO.pt')
 
-def model_predict(image):
-    # Dummy function for ML prediction
+def use_image_for_ml(jpeg_data):
     print("Processing image in ML model...")
-    # Process the image as needed for your ML model here
-    return "Predicted Output"
+    detected_plate = bbox_crop(jpeg_data, model)
+    print(detected_plate)
+    return detected_plate
+
+# def bbox_crop(jpeg_data, model):
+#     # Convert JPEG data to a file-like object
+#     from io import BytesIO
+#     image_stream = BytesIO(jpeg_data)
+#     img = Image.open(image_stream)
+#     # Process the image with the model
+#     result = model.detect(img)
+#     return result
 
 def main():
     camera_index = find_camera_index()
     if camera_index is None:
         print("No valid camera found. Exiting...")
         return
-    
+
     last_capture_time = 0
-    delay_between_captures = 300  # 300 seconds == 5 minutes
+    delay_between_captures = 60  # 60 seconds for testing, adjust as needed
 
     try:
         while True:
@@ -69,8 +80,8 @@ def main():
                     if distance == 10 and (current_time - last_capture_time > delay_between_captures):
                         print("Distance is 10 cm, obtaining image.")
                         frame, jpeg_data = capture_and_process_image(camera_index)
-                        if frame is not None:
-                            result = use_image_for_ml(frame)
+                        if jpeg_data is not None:
+                            result = use_image_for_ml(jpeg_data)
                             print("Result from ML model:", result)
                         last_capture_time = current_time  # Update the last capture time
                 else:
